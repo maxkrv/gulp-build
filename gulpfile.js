@@ -10,7 +10,7 @@ let path = {
         fonts: project_folder + "/fonts/",
     },
     src: {
-        html: source_folder + "/",
+        html: [source_folder + "/*.html", "!" + source_folder + "/_*.html"],
         css: source_folder + "/scss/style.scss",
         js: source_folder + "/js/script.js",
         img: source_folder + "/img/**/*.{jpg, png, svg, webp, ico}",
@@ -27,7 +27,16 @@ let path = {
 
 let {src, dest} = require("gulp"),
     gulp = require("gulp"),
-    browsersync = require("browser-sync").create()
+    browsersync = require("browser-sync").create(),
+    fileinclude = require("gulp-file-include"),
+    del = require("del"),
+    scss = require("gulp-sass"),
+    autoprefixer = require("gulp-autoprefixer"),
+    group_media = require("gulp-group-css-media-queries"),
+    clean_css = require("gulp-clean-css"),
+    rename = require("gulp-rename"),
+    uglify = require('gulp-uglify-es').default,
+    babel = require("gulp-babel");
 
 function browserSync() {
     browsersync.init({
@@ -39,7 +48,76 @@ function browserSync() {
     })
 }
 
-let watch = gulp.parallel(browserSync);
+function html() {
+    return src(path.src.html)
+        .pipe(fileinclude())
+        .pipe(dest(path.build.html))
+        .pipe(browsersync.stream())
+}
 
+function css() {
+    return src(path.src.css)
+        .pipe(
+            scss({
+                outputStyle: "expanded"
+            })
+        )
+        .pipe(
+            group_media()
+        )
+        .pipe(
+            autoprefixer({
+                overrideBrowserslist: ["last 5 versions"],
+                cascade: true
+            })
+        )
+        .pipe(dest(path.build.css))
+        .pipe(clean_css())
+        .pipe(
+            rename({
+                extname: ".min.css"
+            })
+        )
+        .pipe(dest(path.build.css))
+        .pipe(browsersync.stream())
+}
+
+function js() {
+    return src(path.src.js)
+        .pipe(fileinclude())
+        .pipe(dest(path.build.js))
+        .pipe(babel({
+            presets: ["@babel/preset-env"]
+          })
+        )
+        .pipe(
+            uglify()
+        )
+        .pipe(
+            rename({
+                extname: ".min.js"
+            })
+        )
+        .pipe(dest(path.build.js))
+        .pipe(browsersync.stream())
+}
+
+function watchFiles() {
+    gulp.watch([path.watch.html], html);
+    gulp.watch([path.watch.css], css);
+    gulp.watch([path.watch.js], js);
+}
+
+function clean() {
+    return del(path.clean);
+}
+
+let build = gulp.series(clean, gulp.parallel(js, css, html));
+let watch = gulp.parallel(build, watchFiles, browserSync);
+
+exports.js = js;
+exports.css = css;
+exports.html = html;
+exports.build = build;
 exports.watch = watch;
 exports.default = watch;
