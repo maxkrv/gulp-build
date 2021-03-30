@@ -1,7 +1,11 @@
-$red: black;
+$red: red;
 body {
     background-color: $red;
     text-align: center;
     display: flex;
     color: #fff;
+}
+
+.img {
+    display: block;
 }

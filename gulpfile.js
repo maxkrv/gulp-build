@@ -13,14 +13,14 @@ let path = {
         html: [source_folder + "/*.html", "!" + source_folder + "/_*.html"],
         css: source_folder + "/scss/style.scss",
         js: source_folder + "/js/script.js",
-        img: source_folder + "/img/**/*.{jpg, png, svg, webp, ico}",
+        img: source_folder + "/img/**/*.{jpg,png,svg,webp,ico}",
         fonts: source_folder + "/fonts/*.ttf ",
     },
     watch: {
         html: source_folder + "/**/*.html",
         css: source_folder + "/scss/**/*.scss",
         js: source_folder + "/js/**/*.js",
-        img: source_folder + "/img/**/*.{jpg, png, svg, webp, ico}",
+        img: source_folder + "/img/**/*.{jpg,png,svg,webp,ico}",
     },
     clean: "./" + project_folder + "/"
 }
@@ -36,7 +36,9 @@ let {src, dest} = require("gulp"),
     clean_css = require("gulp-clean-css"),
     rename = require("gulp-rename"),
     uglify = require('gulp-uglify-es').default,
-    babel = require("gulp-babel");
+    babel = require("gulp-babel"),
+    imagemin = require("gulp-imagemin"),
+    
 
 function browserSync() {
     browsersync.init({
@@ -102,19 +104,39 @@ function js() {
         .pipe(browsersync.stream())
 }
 
+function images() {
+    return src(path.src.img)
+        .pipe(
+            imagemin({
+                interlaced: true,
+                progressive: true,
+                optimizationLevel: 3,
+                svgoPlugins: [
+                    {
+                        removeViewBox: false
+                    }
+                ]
+            })
+        )
+        .pipe(dest(path.build.img))
+        .pipe(browsersync.stream())
+}
+
 function watchFiles() {
     gulp.watch([path.watch.html], html);
     gulp.watch([path.watch.css], css);
     gulp.watch([path.watch.js], js);
+    gulp.watch([path.watch.img], images);
 }
 
 function clean() {
     return del(path.clean);
 }
 
-let build = gulp.series(clean, gulp.parallel(js, css, html));
+let build = gulp.series(clean, gulp.parallel(js, css, html, images));
 let watch = gulp.parallel(build, watchFiles, browserSync);
 
+exports.images = images;
 exports.js = js;
 exports.css = css;
 exports.html = html;

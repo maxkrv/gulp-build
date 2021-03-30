@@ -1,8 +1,12 @@
 body {
-  background-color: black;
+  background-color: red;
   text-align: center;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   color: #fff;
+}
+
+.img {
+  display: block;
 }
