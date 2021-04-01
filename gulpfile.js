@@ -1,30 +1,3 @@
-const project_folder = "dist";
-const source_folder = "src";
-
-const path = {
-    build: {
-        html: project_folder + "/",
-        css: project_folder + "/css/",
-        js: project_folder + "/js/",
-        img: project_folder + "/img/",
-        fonts: project_folder + "/fonts/",
-    },
-    src: {
-        html: [source_folder + "/*.html", "!" + source_folder + "/_*.html"],
-        css: source_folder + "/scss/style.scss",
-        js: source_folder + "/js/script.js",
-        img: source_folder + "/img/**/*.{jpg,png,svg,webp,ico}",
-        fonts: source_folder + "/fonts/*.ttf ",
-    },
-    watch: {
-        html: source_folder + "/**/*.html",
-        css: source_folder + "/scss/**/*.scss",
-        js: source_folder + "/js/**/*.js",
-        img: source_folder + "/img/**/*.{jpg,png,svg,webp,ico}",
-    },
-    clean: "./" + project_folder + "/"
-}
-
 const {src, dest} = require("gulp"),
     gulp = require("gulp"),
     browsersync = require("browser-sync").create(),
@@ -38,8 +11,34 @@ const {src, dest} = require("gulp"),
     uglify = require('gulp-uglify-es').default,
     babel = require("gulp-babel"),
     imagemin = require("gulp-imagemin");
-    
 
+
+const project_folder = "dist";
+const source_folder = "src";
+const path = {
+    build: {
+        html: project_folder + "/",
+        css: project_folder + "/css/",
+        js: project_folder + "/js/",
+        img: project_folder + "/images/",
+        fonts: project_folder + "/fonts/",
+    },
+    src: {
+        html: [source_folder + "/*.html", "!" + source_folder + "/_*.html"],
+        css: source_folder + "/assets/scss/style.scss",
+        js: source_folder + "/assets/js/script.js",
+        img: source_folder + "/assets/images/**/*.{jpg,png,svg,webp,ico}",
+        fonts: source_folder + "/assets/fonts/*.ttf ",
+    },
+    watch: {
+        html: source_folder + "/**/*.html",
+        css: source_folder + "/assets/scss/**/*.scss",
+        js: source_folder + "/assets/js/**/*.js",
+        img: source_folder + "/assets/images/**/*.{jpg,png,svg,webp,ico}",
+    },
+    clean: "./" + project_folder + "/"
+}
+    
 function browserSync() {
     browsersync.init({
         server: {
