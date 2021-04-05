@@ -1,4 +1,11 @@
+@import "_mixins.scss";
 @import "_reset.scss";
 @import "_fonts.scss";
-@import "_mixins.scss";
 @import "_vars.scss";
+
+
+body {
+    font-family: 'Roboto';
+    font-weight: 700;
+    font-size: 50px;
+}
